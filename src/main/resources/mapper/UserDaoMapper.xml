@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper:根标签，namespace：命名空间，随便写，一般保证命名空间唯一 -->
+<mapper namespace="com.demo.sansan.dao.IgUserDao">
+
+    <select id="queryById" resultType="com.demo.sansan.bean.IgUser">
+        select * from ig_user where id = #{id}
+    </select>
+
+
+    <select id="queryAll" resultType="com.demo.sansan.bean.IgUser">
+        select * from ig_user
+    </select>
+
+
+    <insert id="insert" parameterType="com.demo.sansan.bean.IgUser">
+        INSERT INTO ig_user (
+        id,
+        username,
+        nickName,
+        headImgPath,
+        headImgBase64
+        )
+        VALUES
+        (
+        #{id},
+        #{username},
+        #{nickName},
+        #{headImgPath},
+        #{headImgBase64}
+        );
+    </insert>
+
+
+    <update id="update" parameterType="com.demo.sansan.bean.IgUser">
+        UPDATE ig_user
+        <trim prefix="set" suffixOverrides=",">
+            <if test="nickName!=null">nickName = #{nickName},</if>
+            <if test="headImgPath!=null">headImgPath = #{headImgPath},</if>
+            <if test="headImgBase64!=null">headImgBase64 = #{headImgBase64},</if>
+        </trim>
+        WHERE
+        (id = #{id});
+    </update>
+
+    <delete id="deleteById">
+        delete from ig_user where id=#{id}
+    </delete>
+
+
+</mapper>
