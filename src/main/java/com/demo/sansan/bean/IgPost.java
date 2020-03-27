@@ -13,8 +13,13 @@ public class IgPost {
 
     private long publishTime;//发布时间
     private String text;//帖子
-    private String base64Img;//图片的base64
-    private String imgPath;//图片地址
+    private String link;//帖子连接
+    private String smallImg;//小图
+    private String userId;//用户ID
+    private String userName;//用户名
+    private String nickName;//用户昵称
+    private String userHead;//用户头像
+
 
     public long getPublishTime() {
         return publishTime;
@@ -32,20 +37,53 @@ public class IgPost {
         this.text = text;
     }
 
-    public String getBase64Img() {
-        return base64Img;
+
+    public String getLink() {
+        return link;
     }
 
-    public void setBase64Img(String base64Img) {
-        this.base64Img = base64Img;
+    public void setLink(String link) {
+        this.link = link;
     }
 
-    public String getImgPath() {
-        return imgPath;
+    public String getSmallImg() {
+        return smallImg;
     }
 
-    public void setImgPath(String imgPath) {
-        this.imgPath = imgPath;
+    public void setSmallImg(String smallImg) {
+        this.smallImg = smallImg;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public String getUserHead() {
+        return userHead;
+    }
+
+    public void setUserHead(String userHead) {
+        this.userHead = userHead;
     }
 
     @Override
@@ -53,8 +91,12 @@ public class IgPost {
         return "IgPost{" +
                 "publishTime=" + publishTime +
                 ", text='" + text + '\'' +
-                ", base64Img='" + base64Img + '\'' +
-                ", imgPath='" + imgPath + '\'' +
+                ", link='" + link + '\'' +
+                ", smallImg='" + smallImg + '\'' +
+                ", userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", userHead='" + userHead + '\'' +
                 '}';
     }
 }

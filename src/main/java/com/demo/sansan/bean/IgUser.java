@@ -2,7 +2,6 @@
 
 package com.demo.sansan.bean;
 
-import org.springframework.context.annotation.Bean;
 
 /**
  * <p>Instagram 用户对象。</p>

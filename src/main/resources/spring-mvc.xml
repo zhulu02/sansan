@@ -11,7 +11,11 @@
        http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
 
     <!-- 扫描web相关的bean -->
-    <context:component-scan base-package="com.demo.sansan.controller"/>
+    <context:component-scan base-package="com.demo.sansan"/>
+
+    <!--指定配置文件-->
+    <context:property-placeholder ignore-unresolvable="true"
+                                  location="classpath*:/application.properties" />
 
     <!-- 开启SpringMVC注解模式 -->
     <mvc:annotation-driven/>
