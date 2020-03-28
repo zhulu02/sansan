@@ -19,6 +19,7 @@ public class IgPost {
     private String userName;//用户名
     private String nickName;//用户昵称
     private String userHead;//用户头像
+    private String id;//帖子ID
 
 
     public long getPublishTime() {
@@ -98,5 +99,20 @@ public class IgPost {
                 ", nickName='" + nickName + '\'' +
                 ", userHead='" + userHead + '\'' +
                 '}';
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public IgPost(String id) {
+        this.id = id;
+    }
+
+    public IgPost() {
     }
 }

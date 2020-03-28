@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
+import java.util.List;
 
 
 /**
@@ -34,9 +34,9 @@ public class IgTimer {
     @Async
     @Scheduled(fixedRate = 1000 * 60 * 10)
     public void crawlerExplore() {
-        Set<IgPost> igPostSet = crawler.crawlerExplore();
-        log.info("探索页面成功采集到帖子{}个", igPostSet.size());
-        cacheService.setIgPostsFromExplore(igPostSet);
+        List<IgPost> igPosts = crawler.crawlerExplore();
+        log.info("探索页面成功采集到帖子{}个", igPosts.size());
+        cacheService.setIgPostsFromExplore(igPosts);
     }
 
 }

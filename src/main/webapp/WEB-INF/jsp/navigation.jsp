@@ -57,11 +57,11 @@
                 <c:choose>
                     <c:when test="${requestScope.column_id == '0'}">
                         <li class="active"><a href="explore">探索<span class="sr-only">(current)</span> </a></li>
-                        <li><a href="user">用户</a></li>
+                        <li><a href="#">用户</a></li>
                     </c:when>
                     <c:otherwise >
                         <li><a href="explore">探索</a></li>
-                        <li  class="active"><a href="user">用户<span class="sr-only">(current)</span></a></li>
+                        <li  class="active"><a href="#">用户<span class="sr-only">(current)</span></a></li>
                     </c:otherwise>
                 </c:choose>
             </ul>

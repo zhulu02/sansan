@@ -1,13 +1,10 @@
 package com.demo.sansan.service;
 
 import com.demo.sansan.bean.IgPost;
-import com.demo.sansan.util.Crawler;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>缓存服务。</p>
@@ -19,14 +16,15 @@ import java.util.Set;
 @Service
 public class CacheService {
 
-    private Set<IgPost> igPostsFromExplore = new HashSet<>();
+    private List<IgPost> igPostsFromExplore  = new ArrayList<>();
+    private Map<String,String> imgBase64 = new HashMap<>();
 
 
     /**
      * 获取来自探索页面的帖子
      * @return
      */
-    public Set<IgPost> getIgPostsFromExplore() {
+    public List<IgPost> getIgPostsFromExplore() {
         return igPostsFromExplore;
     }
 
@@ -34,12 +32,28 @@ public class CacheService {
      * 设置来自探索页面的帖子
      * @param igPostsFromExplore
      */
-    public void setIgPostsFromExplore(Set<IgPost> igPostsFromExplore) {
+    public void setIgPostsFromExplore(List<IgPost> igPostsFromExplore) {
         if (igPostsFromExplore != null && igPostsFromExplore.size() > 0) {
             this.igPostsFromExplore = igPostsFromExplore;
         }
-
     }
 
+    /**
+     * 从缓存中获取图片的base64
+     * @param key
+     * @return
+     */
+    public String getBase64(String imgUrl){
+        return imgBase64.get(imgUrl);
+    }
+
+    /**
+     * 缓存图片的base64
+     * @param imgUrl
+     * @param base64
+     */
+    public void setImgBase64(String imgUrl,String base64 ){
+        imgBase64.put(imgUrl,base64);
+    }
 
 }

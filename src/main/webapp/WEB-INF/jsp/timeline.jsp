@@ -4,50 +4,46 @@
 <html lang="zh-CN">
 <%@ include file="header.jsp" %>
 <body>
-<jsp:include   page="navigation.jsp" flush="true"/>
+<jsp:include page="navigation.jsp" flush="true"/>
 
-<div class="container div_divider">
-    <!-- 分割线 -->
-    <hr class="hr_1">
-    welcome !
-    <hr class="hr_2">
-    <div class="row">
-        <!-- 文章列表 -->
-        <div class="col-xs-9">
-            <div class="list-group div_article">
-                <!-- 子头栏 -->
-                <a href="#" class="list-group-item active item_article_first">
-                    <h4 class="list-group-item-heading">
-                        ${requestScope.message}
-                        ${requestScope.igPost.text}
-                    </h4>
-                </a>
 
-                <c:forEach items="${requestScope.igPosts}" var="igPost">
+<div class="row div_function" style="height: 20px;">&nbsp;</div>
+<div class="row div_function">
+    <div class="col-xs-2"></div>
 
-                    <div class="list-group-item item_article">
-                        <div class="row">
-                            <div class="div_center col-xs-9">
-                                <div class="list-group-item-heading div_article_title">
-                                    <strong>
-                                            ${igPost.publishTime }
-                                    </strong>
-                                </div>
-                                <p class="list-group-item-text div_article_content">
-                                        ${igPost.text }
-                                </p>
-                            </div>
-                            <!-- 右侧图片，信息 -->
-                            <div class="col-xs-3 div_right_info">
-                                <img class="iv_article img-rounded" src=" ${igPost.imgPath }">
-                            </div>
-                        </div>
-                    </div>
-                </c:forEach>
-
-            </div>
-        </div>
+    <div class="col-xs-2">
+        <img class="img-circle iv_article" src="${requestScope.igUser.headImgBase64}" alt="头像"/>
     </div>
+    <div class="col-xs-6">
+        <h2>${requestScope.igUser.username}</h2>
+        <h3></h3>
+        <h4>${requestScope.igUser.nickName}</h4>
+    </div>
+    <div class="col-xs-2"></div>
 </div>
+
+
+<div class="row " style="height: 30px;">&nbsp;</div>
+
+
+<c:forEach items="${requestScope.lists}" var="list" >
+
+    <div class="row div_function">
+
+      <div class="col-xs-2"></div>
+
+        <c:forEach items="${list}" var="igPost">
+            <div class="col-xs-3">
+                <div class="panel panel-default" id="${igPost.link}"  style="height: 350px;">
+                    <div class="panel-body">
+                        <a href="content?id=${igPost.id}"><img class="iv_function" src="${igPost.smallImg} "></a>
+                    </div>
+                </div>
+            </div>
+        </c:forEach>
+        <div class="col-xs-1"></div>
+    </div>
+</c:forEach>
+
 </body>
 </html>

@@ -2,8 +2,10 @@ package com.demo.sansan.service;
 
 import com.demo.sansan.bean.IgUser;
 import com.demo.sansan.dao.IgUserDao;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
  * @author Lu Zhu(zhulu@eefung.com)
  * @since $version$
  */
+@Slf4j
 @Service
 public class IgService {
 
@@ -25,7 +28,7 @@ public class IgService {
      * 查询所有
      * @return
      */
-    public List<IgUser> queryAll(){
+    public List<IgUser> queryAll() {
         return igUserDao.queryAll();
     }
 }
