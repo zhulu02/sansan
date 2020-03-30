@@ -13,7 +13,8 @@
 
         <c:forEach items="${list}" var="igPost">
             <div class="col-xs-4">
-                <div class="panel panel-default"  style="height: 470px;">
+                <!--style="height: 470px;"-->
+                <div class="panel panel-default" >
                     <div class="panel-body">
                        <a href="content?id=${igPost.id}"><img class="iv_function" src="${igPost.smallImg} "></a>
                     </div>

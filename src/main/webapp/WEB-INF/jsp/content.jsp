@@ -32,18 +32,18 @@
 
     <!--用户信息-->
     <div class="row">
-        <div class="col-xs-2"></div>
-        <div class="col-xs-1 ">
+        <div class="col-xs-2 col-md-2"></div>
+        <div class="col-xs-3 col-md-1">
             <img class="img-circle iv_article" src="${requestScope.igPost.userHead}" alt="头像" style="height:80px;"/>
         </div>
-        <div class="col-xs-6 " >
+        <div class="col-xs-4 col-md-6" >
             <div id="top">
                 <h3></h3>
             </div>
             <div id="floater"></div>
             <div id="content"><a href = "timeline?username=${requestScope.igPost.userName}">${requestScope.igPost.userName}</a></div>
         </div>
-        <div class="col-xs-2"></div>
+        <div class="col-xs-2 col-md-2"></div>
     </div>
 
     <!--图片-->
