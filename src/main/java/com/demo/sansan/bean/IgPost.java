@@ -20,6 +20,8 @@ public class IgPost {
     private String nickName;//用户昵称
     private String userHead;//用户头像
     private String id;//帖子ID
+    private long createTime;//创建时间
+    private String img;//大图
 
 
     public long getPublishTime() {
@@ -109,10 +111,33 @@ public class IgPost {
         this.id = id;
     }
 
-    public IgPost(String id) {
-        this.id = id;
-    }
+//    public IgPost(String id) {
+//        this.id = id;
+//    }
 
     public IgPost() {
+    }
+
+    public long getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(long createTime) {
+        this.createTime = createTime;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    public IgPost(long publishTime, String text, String id) {
+        this.publishTime = publishTime;
+        this.text = text;
+        this.id = id;
+        this.link =  "https://www.instagram.com/p/" + id;
     }
 }

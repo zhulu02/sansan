@@ -48,4 +48,11 @@ public interface IgUserDao {
      */
     void deleteById(String id);
 
+    /**
+     *  根据用户名查找
+     * @param userName
+     * @return
+     */
+    IgUser queryByUserName(String userName);
+
 }

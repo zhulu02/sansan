@@ -13,10 +13,10 @@
     <div class="col-md-2 col-xs-2"></div>
 
     <div class="col-md-2 col-xs-4">
-        <img class="img-circle iv_article" src="${requestScope.igUser.headImgBase64}" alt="头像"/>
+        <img class="img-circle iv_article" src="${requestScope.igUser.headImg}" alt="头像"/>
     </div>
     <div class="col-md-6 col-xs-4">
-        <h2>${requestScope.igUser.username}</h2>
+        <h2>${requestScope.igUser.userName}</h2>
         <h3></h3>
         <h4>${requestScope.igUser.nickName}</h4>
     </div>

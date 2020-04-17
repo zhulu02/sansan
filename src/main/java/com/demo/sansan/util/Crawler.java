@@ -1,7 +1,9 @@
 package com.demo.sansan.util;
 
 import com.demo.sansan.bean.IgPost;
-import com.demo.sansan.service.CacheService;
+import com.demo.sansan.bean.IgUser;
+import com.demo.sansan.dao.IgPostDao;
+import com.demo.sansan.dao.IgUserDao;
 import com.google.gson.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -22,10 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>爬虫。</p>
@@ -51,8 +50,12 @@ public class Crawler {
     @Value("${crawler.explore.url}")
     private String exploreAddr;
 
+
     @Autowired
-    private CacheService cacheService;
+    private IgUserDao igUserDao;
+
+    @Autowired
+    private IgPostDao igPostDao;
 
 
     /**
@@ -105,23 +108,24 @@ public class Crawler {
                                 }
                             }
 
-
                             String userId = user.get("pk").getAsString();
-                            String full_name = user.get("full_name").getAsString();
-                            String profile_pic_url = user.get("profile_pic_url").getAsString();
-                            String text = obj.getAsJsonObject("caption").get("text").getAsString();
-                            String link = "https://www.instagram.com/p/" + code;
+//                            String full_name = user.get("full_name").getAsString();
+//                            String profile_pic_url = user.get("profile_pic_url").getAsString();
+                            String text = null;
+                            try {
+                                text = obj.getAsJsonObject("caption").get("text").getAsString();
+                            } catch (Exception e) {
+                                log.warn("解析文本异常,json = " + obj);
+                            }
+                            IgPost igPost = new IgPost(taken_at, text, code);
+                            String smallImgBase64 = encodeImageToBase64(img, proxy);
+                            if (StringUtils.isNotBlank(smallImgBase64)) {
+                                igPost.setSmallImg(smallImgBase64);
+                                igPost.setUserId(userId);
+                                igPost.setUserName(username);
+                                igPosts.add(igPost);
+                            }
 
-                            IgPost igPost = new IgPost(code);
-                            igPost.setPublishTime(taken_at);
-                            igPost.setText(text);
-                            igPost.setLink(link);
-                            igPost.setSmallImg(img);
-                            igPost.setUserId(userId);
-                            igPost.setNickName(full_name);
-                            igPost.setUserHead(profile_pic_url);
-                            igPost.setUserName(username);
-                            igPosts.add(igPost);
                         } catch (Exception e) {
                             log.warn("解析帖子异常,对象详情:{}", media);
                             log.error("解析帖子异常", e);
@@ -131,7 +135,8 @@ public class Crawler {
                 }
             }
         }
-        return processImg(igPosts);
+
+        return new ArrayList<>(igPosts);
     }
 
 
@@ -150,7 +155,7 @@ public class Crawler {
         }
 
         if (document == null) {
-            return new ArrayList<>();
+            return null;
         }
 
 
@@ -175,10 +180,10 @@ public class Crawler {
         }
 
         if (jsonObject == null) {
-            return new ArrayList<>();
+            return null;
         }
 
-        Set<IgPost> igPosts = new HashSet<>();
+        List<IgPost> igPosts = new ArrayList<>();
         JsonArray profilePage = jsonObject.getAsJsonObject().getAsJsonObject("entry_data").getAsJsonArray("ProfilePage");
         JsonObject user = profilePage.get(0).getAsJsonObject().getAsJsonObject("graphql").getAsJsonObject("user");
         String full_name = user.get("full_name").getAsString();
@@ -201,17 +206,16 @@ public class Crawler {
                     break;
                 }
             }
+            IgPost igPost = new IgPost(taken_at_timestamp, null, shortcode);
 
-            IgPost igPost = new IgPost(shortcode);
-            igPost.setPublishTime(taken_at_timestamp);
-            igPost.setSmallImg(img);
+            igPost.setSmallImg(img);//设置小图
             igPost.setUserId(id);
             igPost.setNickName(full_name);
             igPost.setUserName(username);
-            igPost.setUserHead(profile_pic_url);
+            igPost.setUserHead(profile_pic_url);//设置用户大图
             igPosts.add(igPost);
         }
-        return processImg(igPosts);
+        return igPosts;
     }
 
 
@@ -220,7 +224,8 @@ public class Crawler {
      * @param id
      * @return
      */
-    public IgPost crawlerContent(String id) {
+    public List<Object> crawlerContent(String id) {
+
         //采集
         String url = "https://www.instagram.com/p/" + id + "/?a=_1";
         Document document = null;
@@ -249,7 +254,7 @@ public class Crawler {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("解析帖子详情失败,帖子地址:" + url, e);
                 }
             }
         }
@@ -266,15 +271,47 @@ public class Crawler {
         String profile_pic_url = owner.get("profile_pic_url").getAsString();
         String username = owner.get("username").getAsString();
         String full_name = owner.get("full_name").getAsString();
-        IgPost igPost = new IgPost();
-        igPost.setPublishTime(taken_at_timestamp);
-        igPost.setSmallImg(display_url);
+
+        IgPost igPost = new IgPost(taken_at_timestamp, text, id);
+//        String displayUrlBase64 =  encodeImageToBase64(display_url, proxy);
+        igPost.setImg(display_url);//小图
         igPost.setText(text);
-        igPost.setUserHead(profile_pic_url);
-        igPost.setUserName(username);
-        igPost.setNickName(full_name);
-        processImg(igPost);
-        return igPost;
+
+        int count = owner.getAsJsonObject("edge_owner_to_timeline_media").get("count").getAsInt();//帖子数
+        IgUser igUser = new IgUser(username, full_name);
+//        String userHeadBase64 =  encodeImageToBase64(profile_pic_url, proxy);
+        igUser.setSmallHeadImg(profile_pic_url);//图片地址转成base64
+        igUser.setPostCount(count);
+
+
+        List<Object> result = new ArrayList<>();
+        result.add(igPost);
+        result.add(igUser);
+
+//
+//        if(StringUtils.isBlank(userHead)){
+//            //设置用户信息
+//            int count = owner.getAsJsonObject("edge_owner_to_timeline_media").get("count").getAsInt();//帖子数
+//            IgUser igUser = new IgUser(username,full_name);
+//            String userHeadBase64 =  encodeImageToBase64(profile_pic_url, proxy);
+//            igUser.setSmallHeadImg(userHeadBase64);//图片地址转成base64
+//            igUser.setPostCount(count);
+//            igUserDao.insert(igUser);//新增用户
+//            igPostDao.updateImg(igPost);//更新大图
+//            igPost.setUserName(igUser.getUserName());
+//            igPost.setUserHead(igUser.getSmallHeadImg());
+//            igPost.setNickName(igUser.getNickName());
+//            log.info("更新内容，新增用户");
+//        }else{
+//            igPostDao.updateImg(igPost);//更新大图
+//            igPost.setUserName(username);
+//            igPost.setUserHead(userHead);
+//            igPost.setNickName(full_name);
+//            log.info("更新内容，新增用户");
+//        }
+
+
+        return result;
 
     }
 
@@ -347,7 +384,7 @@ public class Crawler {
      * @param proxyStr
      * @return
      */
-    public String encodeImageToBase64(String imgUrl, String proxyStr) {
+    private String encodeImageToBase64(String imgUrl, String proxyStr) {
         HttpURLConnection conn = null;
         try {
             URL url = new URL(imgUrl);
@@ -381,64 +418,13 @@ public class Crawler {
 
 
     /**
-     * 处理图片，将其转换成base64
-     * @param igPosts
+     * 图片地址转成base64
+     * @param imgUrl
      * @return
      */
-    public List<IgPost> processImg(Set<IgPost> igPosts) {
-
-        List<IgPost> igPostList = new ArrayList<>();
-        for (IgPost igPost : igPosts) {
-            //获取帖子小图的base64
-            String smallImg = igPost.getSmallImg();
-            String smallImgBase64 = cacheService.getBase64(smallImg);
-            if (StringUtils.isBlank(smallImgBase64)) {
-                smallImgBase64 = encodeImageToBase64(smallImg, proxy);
-            }
-            if (StringUtils.isNotBlank(smallImgBase64)) {
-                cacheService.setImgBase64(smallImg, smallImgBase64);//TODO 添加到缓存
-                igPost.setSmallImg(smallImgBase64);
-            }
-            //获取用户头像的base64
-            String userHead = igPost.getUserHead();
-            String userHeadBase64 = cacheService.getBase64(userHead);
-            if (StringUtils.isBlank(userHeadBase64)) {
-                userHeadBase64 = encodeImageToBase64(userHead, proxy);
-            }
-            if (StringUtils.isNotBlank(userHeadBase64)) {
-                cacheService.setImgBase64(userHead, userHeadBase64);//TODO 添加到缓存
-                igPost.setUserHead(userHeadBase64);
-            }
-            igPostList.add(igPost);
-        }
-        return igPostList;
+    public String encodeImageToBase64(String imgUrl) {
+        return encodeImageToBase64(imgUrl, proxy);
     }
 
-    /**
-     * 处理图片
-     * @param igPost
-     */
-    private void processImg(IgPost igPost){
-        //获取帖子小图的base64
-        String smallImg = igPost.getSmallImg();
-        String smallImgBase64 = cacheService.getBase64(smallImg);
-        if (StringUtils.isBlank(smallImgBase64)) {
-            smallImgBase64 = encodeImageToBase64(smallImg, proxy);
-        }
-        if (StringUtils.isNotBlank(smallImgBase64)) {
-            cacheService.setImgBase64(smallImg, smallImgBase64);//TODO 添加到缓存
-            igPost.setSmallImg(smallImgBase64);
-        }
-        //获取用户头像的base64
-        String userHead = igPost.getUserHead();
-        String userHeadBase64 = cacheService.getBase64(userHead);
-        if (StringUtils.isBlank(userHeadBase64)) {
-            userHeadBase64 = encodeImageToBase64(userHead, proxy);
-        }
-        if (StringUtils.isNotBlank(userHeadBase64)) {
-            cacheService.setImgBase64(userHead, userHeadBase64);//TODO 添加到缓存
-            igPost.setUserHead(userHeadBase64);
-        }
-    }
 
 }

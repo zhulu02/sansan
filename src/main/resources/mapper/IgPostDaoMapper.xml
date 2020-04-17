@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- mapper:根标签，namespace：命名空间，随便写，一般保证命名空间唯一 -->
+<mapper namespace="com.demo.sansan.dao.IgPostDao">
+
+
+    <!--单条记录插入-->
+    <insert id="insert" parameterType="com.demo.sansan.bean.IgPost">
+        INSERT INTO ig_post (
+        publishTime,text,link,smallImg,userName,id,createTime
+        )
+        VALUES
+        (
+        #{publishTime},#{text},#{link},#{smallImg}, #{userName},#{id},NOW()
+        );
+    </insert>
+
+    <!--批量插入 insert ignore 没有则插入，有就忽略-->
+    <insert id="bulkInsert" parameterType="java.util.List">
+        insert ignore into ig_post
+        (
+        publishTime,text,link,smallImg,userName,id,createTime
+        )
+        values
+        <foreach collection="list" item="item" index= "index" separator =",">
+            (
+            #{item.publishTime},#{item.text},#{item.link},#{item.smallImg}, #{item.userName},#{item.id},NOW()
+            )
+        </foreach>
+    </insert>
+
+
+    <select id="queryLatest" resultType="com.demo.sansan.bean.IgPost">
+        select smallImg,id,userName from ig_post ORDER BY 'publishTime' DESC  LIMIT 9
+    </select>
+
+    <select id="queryById" resultType="com.demo.sansan.bean.IgPost" >
+        SELECT p.username,publishTime,smallImg,text,smallHeadImg as userHead ,img from ig_post p right join ig_user u on p.userName = u.userName where id = #{postId}
+    </select>
+
+    <update id="updateImg" parameterType="com.demo.sansan.bean.IgPost">
+        UPDATE ig_post SET img =#{img},text=#{text}
+         WHERE id = #{id};
+    </update>
+
+    <select id="queryByUserName" resultType="com.demo.sansan.bean.IgPost" >
+        SELECT u.username,u.nickName,u.headImg as userHead ,
+        publishTime,text,smallImg,id
+        from ig_post p left join ig_user u on p.userName = u.userName
+        where  p.userName = #{userName}
+        ORDER BY 'publishTime' DESC
+    </select>
+
+
+
+</mapper>

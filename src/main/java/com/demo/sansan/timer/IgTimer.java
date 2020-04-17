@@ -1,7 +1,7 @@
 package com.demo.sansan.timer;
 
 import com.demo.sansan.bean.IgPost;
-import com.demo.sansan.service.CacheService;
+import com.demo.sansan.dao.IgPostDao;
 import com.demo.sansan.util.Crawler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +28,21 @@ public class IgTimer {
     @Autowired
     private Crawler crawler;
     @Autowired
-    private CacheService cacheService;
+    private IgPostDao igPostDao;
 
 
     @Async
-    @Scheduled(fixedRate = 1000 * 60 * 10)
+    @Scheduled(cron = "0 0/10 * * * * ")
     public void crawlerExplore() {
         List<IgPost> igPosts = crawler.crawlerExplore();
-        log.info("探索页面成功采集到帖子{}个", igPosts.size());
-        cacheService.setIgPostsFromExplore(igPosts);
+        if (igPosts == null || igPosts.size() == 0) {
+            return;
+        }
+        //持久帖子
+        igPostDao.bulkInsert(igPosts);
+        log.info("持久帖子:{}个", igPosts.size());
+
     }
+
 
 }

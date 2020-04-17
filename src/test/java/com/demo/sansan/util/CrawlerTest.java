@@ -2,6 +2,7 @@ package com.demo.sansan.util;
 
 
 import com.demo.sansan.bean.IgPost;
+import com.demo.sansan.bean.IgUser;
 import com.google.gson.*;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
@@ -136,6 +137,8 @@ public class CrawlerTest {
                 String id = user.get("id").getAsString();
                 String profile_pic_url = user.get("profile_pic_url").getAsString();
                 String username = user.get("username").getAsString();
+                System.out.println(user);
+                System.out.println();
 
                 JsonArray edges = user.getAsJsonObject("edge_owner_to_timeline_media").getAsJsonArray("edges");
                 for (JsonElement edge : edges) {
@@ -154,7 +157,7 @@ public class CrawlerTest {
                         }
                     }
 
-                    IgPost igPost = new IgPost(shortcode);
+                    IgPost igPost = new IgPost(taken_at_timestamp, null,  id);
                     igPost.setPublishTime(taken_at_timestamp);
                     igPost.setSmallImg(img);
                     igPost.setUserId(id);
@@ -204,22 +207,40 @@ public class CrawlerTest {
                 String display_url = media.get("display_url").getAsString();
                 String text = media.getAsJsonObject("edge_media_to_caption").getAsJsonArray("edges").get(0).getAsJsonObject().getAsJsonObject("node").get("text").getAsString();
                 long taken_at_timestamp = media.get("taken_at_timestamp").getAsLong() * 1000;
+
+                //用户信息
                 JsonObject owner = media.getAsJsonObject("owner");
+                //小图
                 String profile_pic_url = owner.get("profile_pic_url").getAsString();
                 String username = owner.get("username").getAsString();
+                String id = owner.get("id").getAsString();
                 String full_name = owner.get("full_name").getAsString();
-                IgPost igPost = new IgPost();
-                igPost.setPublishTime(taken_at_timestamp);
-                igPost.setSmallImg(display_url);
-                igPost.setText(text);
-                igPost.setUserHead(profile_pic_url);
-                igPost.setUserName(username);
-                igPost.setNickName(full_name);
-                System.out.println(new Gson().toJson(igPost));
+                int count = owner.getAsJsonObject("edge_owner_to_timeline_media").get("count").getAsInt();//帖子数
+
+                //设置用户信息
+                IgUser igUser = new IgUser(id,username);
+                igUser.setSmallHeadImg(profile_pic_url);//TODO 需要转成base64
+                igUser.setNickName(full_name);
+                igUser.setPostCount(count);
+                System.out.println(new Gson().toJson(igUser));
+
+
+//                //设置帖子信息
+//                IgPost igPost = new IgPost();
+//                igPost.setPublishTime(taken_at_timestamp);
+//                igPost.setSmallImg(display_url);
+//                igPost.setText(text);
+//                igPost.setUserHead(profile_pic_url);
+//                igPost.setUserName(username);
+//                igPost.setNickName(full_name);
+//
+//                System.out.println(new Gson().toJson(igPost));
 
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 }

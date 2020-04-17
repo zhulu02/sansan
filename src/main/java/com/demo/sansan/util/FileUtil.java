@@ -1,7 +1,6 @@
 package com.demo.sansan.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,16 +15,14 @@ import java.io.IOException;
  * @since $version$
  */
 @Slf4j
-@Component
 public class FileUtil {
-
 
     /**
      * 读取文件
      * @param filePath
      * @return
      */
-    public String getDataFromFile(String filePath) {
+    public static String getDataFromFile(String filePath) {
         StringBuilder fileKeywords = new StringBuilder();
         BufferedReader br = null;
         try {

@@ -4,8 +4,14 @@
 <!-- mapper:根标签，namespace：命名空间，随便写，一般保证命名空间唯一 -->
 <mapper namespace="com.demo.sansan.dao.IgUserDao">
 
+
+
     <select id="queryById" resultType="com.demo.sansan.bean.IgUser">
-        select * from ig_user where id = #{id}
+        select * from ig_user where userId = #{userId}
+    </select>
+
+    <select id="queryByUserName" resultType="com.demo.sansan.bean.IgUser">
+        select userName,nickName,smallHeadImg,headImg,postCount,followerCount,following from ig_user where userName = #{userName}
     </select>
 
 
@@ -16,32 +22,17 @@
 
     <insert id="insert" parameterType="com.demo.sansan.bean.IgUser">
         INSERT INTO ig_user (
-        id,
-        username,
-        nickName,
-        headImgPath,
-        headImgBase64
+          userId,userName,nickName,smallHeadImg,headImg, postCount,followerCount,following, updateTime
         )
         VALUES
         (
-        #{id},
-        #{username},
-        #{nickName},
-        #{headImgPath},
-        #{headImgBase64}
+        #{userId},#{userName},#{nickName},#{smallHeadImg},#{headImg},#{postCount}, #{followerCount},#{following},NOW()
         );
     </insert>
 
 
     <update id="update" parameterType="com.demo.sansan.bean.IgUser">
-        UPDATE ig_user
-        <trim prefix="set" suffixOverrides=",">
-            <if test="nickName!=null">nickName = #{nickName},</if>
-            <if test="headImgPath!=null">headImgPath = #{headImgPath},</if>
-            <if test="headImgBase64!=null">headImgBase64 = #{headImgBase64},</if>
-        </trim>
-        WHERE
-        (id = #{id});
+        UPDATE ig_user SET headImg =#{headImg} WHERE userName = #{userName};
     </update>
 
     <delete id="deleteById">
